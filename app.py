@@ -84,9 +84,38 @@ try:
             sns.lineplot(data=year_df, x='Month', y='Humidity', marker='o', color='green', ax=ax3)
             plt.xticks(rotation=90)
             st.pyplot(fig3)
+
+    # ৭. কম্পারিজন সেকশন
+        st.sidebar.divider()
+        compare_year = st.sidebar.checkbox("Compare with another year?")
+
+        if compare_year:
+            year_2 = st.sidebar.selectbox("Select Second Year", years, index=1, key="year2_select")
+            
+            st.divider()
+            st.subheader(f"🔄 Comparison: {selected_year} vs {year_2}")
+            
+            compare_param = st.selectbox("Select Parameter to Compare", 
+                                         ['Max_Temp', 'Min_Temp', 'Precipitation', 'Humidity'], 
+                                         key="param_select")
+            
+            df_year1 = df[df['Year'] == selected_year].sort_values('ds')
+            df_year2 = df[df['Year'] == year_2].sort_values('ds')
+            
+            fig_comp, ax_comp = plt.subplots(figsize=(12, 5))
+            sns.lineplot(x=df_year1['Month'], y=df_year1[compare_param], marker='o', label=str(selected_year), ax=ax_comp)
+            sns.lineplot(x=df_year2['Month'], y=df_year2[compare_param], marker='s', label=str(year_2), ax=ax_comp)
+            
+            plt.title(f"{compare_param} Comparison: {selected_year} vs {year_2}")
+            plt.ylabel(compare_param)
+            plt.xticks(rotation=45)
+            plt.legend()
+            plt.grid(True, alpha=0.2)
+            st.pyplot(fig_comp)
         
     else:
         st.error("Data not found for this selection!")
 
 except Exception as e:
     st.error(f"Error: {e}")
+
